@@ -36,27 +36,33 @@ import time
 
 class ManualControl:
     
-    def __init__(self, controller, stop_requested):
+    def __init__(self, controller, conductor):
         self.controller = controller
-        self.stop_requested = stop_requested
-    
+        self.conductor = conductor
+    # We define here the forward, backward, etc. separately for this class because
+    # we might want to edit the way it goes forward and edit the response to the controls
+    # so these files must be clearly separated
+    # robot_control is only used for writing data to places. 
     def forward(self):
         # input the amount of steps taken when button pressed 
         # see the robot_control module for information
-        steps = 100
+        steps = "010"
         self.controller.forward(steps)
         
     def backward(self):
-        steps = 100
+        steps = "010"
         self.controller.backward(steps)
     
     def left(self):
-        steps = 100
+        steps = "010"
         self.controller.left(steps)
     
     def right(self):
-        steps = 100
+        steps = "010"
         self.controller.right(steps)
+    
+    def stop(self):
+        self.controller.stop()
     
     def loop(self, stdscr):
         print("Manual control started. Use arrow keys (ESC to stop).")
@@ -65,7 +71,7 @@ class ManualControl:
         stdscr.keypad(True)    # enable arrow keys
 
         try:
-            while not self.stop_requested:
+            while not self.conductor.stop_requested:
 
                 key = stdscr.getch()
 
@@ -80,6 +86,9 @@ class ManualControl:
 
                 elif key == curses.KEY_RIGHT:
                     self.right()
+                    
+                elif key == curses.SPACE:
+                    self.stop()
 
                 elif key == 27:   # ESC key
                     self.controller.writeData("1,000,000,1,0,1,0")

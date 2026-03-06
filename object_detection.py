@@ -14,7 +14,7 @@ class LogoDetector:
         self.running = False
         self.frame = None
 
-        reference_image = cv2.imread("logo.jpg")
+        reference_image = cv2.imread("/home/robox/The-Box-Engineers-PrimeBox/images/logo.jpg")
 
         if reference_image is None:
             raise Exception("Fault: could not find image")

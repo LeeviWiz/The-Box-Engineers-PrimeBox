@@ -1,0 +1,3 @@
+from object_detection import start_server
+
+start_server()

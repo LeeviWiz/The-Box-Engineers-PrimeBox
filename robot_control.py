@@ -1,6 +1,8 @@
 
 
 """
+This module is used for writing data mainly to the ESP motor controlling. 
+
 The controller is the hardware abstraction layer. 
 All real control of the motors are happening inside
 the ESP32 and because we don't have the source code
@@ -124,21 +126,37 @@ class RobotController():
     
     def forward(self, steps):
         print ("FORWARD CONTINUOUS sending 0,steps,015,1,0,1,0")
-        self.writeData(f"0,{steps},015,1,0,1,0")
+        self.writeData(f"0,{steps},005,1,0,1,0")
         #self.waituntil(self.CONT)
 
     def backward(self, steps):
         print ("REVERSE STRAIGHT sending 1,steps,015,0,0,0,0")
-        self.writeData(f"1,{steps},015,0,0,0,0")
+        self.writeData(f"1,{steps},005,0,0,0,0")
         #self.waituntil(self.STRAI)
     
     def left(self, steps):
         print ("TURN LEFT sending 0,steps,020,1,4,1,0")
-        self.writeData(f"0,{steps},015,1,4,1,0")
+        self.writeData(f"0,{steps},005,1,4,1,0")
         #self.waituntil(self.LEFT)   
     
     def right(self, steps):
         print ("TURN RIGHT sending 0,200,020,1,0,1,4")
-        self.writeData(f"0,{steps},015,1,0,1,4")
+        self.writeData(f"0,{steps},005,1,0,1,4")
         #self.waituntil(self.RIGHT)
+    
+    def stop(self):
+        print("EMERGENCY STOP SENT")
+        self.writeData("1,000,000,1,0,1,0")
+    
+    def spin_on_place(self, direction="clockwise"):
+        """
+        Spins the robot in place without moving forward.
+        
+        Args:
+            steps (int): Number of steps to rotate.
+            direction (str): "clockwise" or "counterclockwise".
+        """
+        print(f"spinning on my place {direction}")
+        
+        
 

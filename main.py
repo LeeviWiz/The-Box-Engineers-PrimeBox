@@ -21,7 +21,7 @@ communicate with each other.
 # 0. Importing libraries and modules
 # ============================================================
 
-from leevi_software.orchestration import Conductor
+from orchestration import Conductor
 import time
 
 # ============================================================
@@ -35,22 +35,21 @@ class Test:
         print("Running test")
 
 if __name__ == "__main__":
-    
+
     print("Inside main")
+
     t = Test()
     t.run()
-    
-    print("the main is running")
-    
-    conductor = Conductor()
-    conductor.conduct()
 
-    # Keep main alive
+    print("the main is running")
+
+    conductor = Conductor()
+
     try:
-        while True:
-            time.sleep(1)
+        conductor.conduct()
+
     except KeyboardInterrupt:
-        conductor.stop()
-        print("Shutting down...")
-        
-        
+        print("Keyboard interrupt received")
+
+    finally:
+        conductor.controller.stop()
