@@ -9,14 +9,22 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(LEFT_SENSOR, GPIO.IN)
 GPIO.setup(RIGHT_SENSOR, GPIO.IN)
 
-try:
-    while True:
-        left_state = GPIO.input(LEFT_SENSOR)
-        right_state = GPIO.input(RIGHT_SENSOR)
-        
-        # 0 = zwart, 1 = wit
-        print(f"Links: {left_state}  Rechts: {right_state}")
-        
-        time.sleep(1)
-except KeyboardInterrupt:
-    GPIO.cleanup()
+if linetracing == true 
+
+    #both black = intersection
+    if LEFT_SENSER == 0 and RIGHT_SENSOR == 0
+        #code go straight
+
+    # only left sees black
+    elif LEFT_SENSER == 1 and RIGHT_SENSOR == 0
+        #code turn left
+
+    #only right sees black
+    elif LEFT_SENSER == 0 and RIGHT_SENSOR == 1
+        #code turn right   
+    
+    #both don't see black
+    else 
+        #code to go straight
+
+GPIO.cleanup()

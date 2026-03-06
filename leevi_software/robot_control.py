@@ -1,6 +1,13 @@
 
 
 """
+The controller is the hardware abstraction layer. 
+All real control of the motors are happening inside
+the ESP32 and because we don't have the source code
+it's basically firmware that we send commands to right now and it
+deterministically executes them until the end probably
+because the firmware code tries to avoid resonance between motor steps
+
 This module implements object-oriented programming for robot control.
 
 The `RobotController` class provides a reusable interface for controlling the robot,
@@ -43,7 +50,7 @@ class RobotController():
         #esp_ret_value = 0
         #esp_prev_value = 0
 
-        self.bus = smbus.SMBus(BUS_KANAAL_1)
+        self.bus = smbus.SMBus(self.BUS_KANAAL_1)
 
         # Address = 9 for our ESP32 microcontroller we are talking to
         self.DEVICE_ADDRESS = 0x09
@@ -58,8 +65,8 @@ class RobotController():
         self.STOP = 57	# stopped
 
     def writeData(self, value):
-        byteValue = StringToBytes(value)
-        bus.write_i2c_block_data(DEVICE_ADDRESS,0x01,byteValue)	#first byte is "1"-command byte (not used in ESP32)
+        byteValue = self.StringToBytes(value)
+        self.bus.write_i2c_block_data(self.DEVICE_ADDRESS,0x01,byteValue)	#first byte is "1"-command byte (not used in ESP32)
         return -1
 
     def waituntil(self, ret_value):
@@ -69,7 +76,7 @@ class RobotController():
         start_time = time.time() # start measuring time from here
         while esp_ret_value != ret_value:
             try:
-                esp_ret_value = bus.read_byte(DEVICE_ADDRESS)
+                esp_ret_value = self.bus.read_byte(self.DEVICE_ADDRESS)
             except OSError:
                 print("I2C read error")
                 break
@@ -102,4 +109,36 @@ class RobotController():
         for c in val:
             retVal.append(ord(c))
         return retVal
+    
+    """      
+    # format of byte string sent to ESP32 motor control 
+    #    "a,sss,eee,r,s,r,s" where following values are valid
+    # a: = 1 (run a number of steps ) or 0 (run continuously)
+    # sss: number of hectosteps to execute (from 001 to 999) when a = 1  
+    # eee: motor end speed (from 000 to 030)
+    # r: = 0 (run forward or 1 (run backward) for left motor
+    # s: skip step (from 0 to 9) From available motor timing pulses, we skip 0 to max 9 to reduce motor speed for left motor
+    # r: = 0 (run forward) or 1 (run backward) for right motor
+    # s: skip step (from 0 to 9) From available motor timing pulses, we skip 0 to max 9 to reduce motor speed for right motor
+    """
+    
+    def forward(self, steps):
+        print ("FORWARD CONTINUOUS sending 0,steps,015,1,0,1,0")
+        self.writeData(f"0,{steps},015,1,0,1,0")
+        #self.waituntil(self.CONT)
+
+    def backward(self, steps):
+        print ("REVERSE STRAIGHT sending 1,steps,015,0,0,0,0")
+        self.writeData(f"1,{steps},015,0,0,0,0")
+        #self.waituntil(self.STRAI)
+    
+    def left(self, steps):
+        print ("TURN LEFT sending 0,steps,020,1,4,1,0")
+        self.writeData(f"0,{steps},015,1,4,1,0")
+        #self.waituntil(self.LEFT)   
+    
+    def right(self, steps):
+        print ("TURN RIGHT sending 0,200,020,1,0,1,4")
+        self.writeData(f"0,{steps},015,1,0,1,4")
+        #self.waituntil(self.RIGHT)
 

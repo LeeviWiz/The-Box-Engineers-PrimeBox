@@ -1,0 +1,3 @@
+from Opencv2LogoDetect import start_server
+
+start_server()
